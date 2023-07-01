@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -27,6 +27,9 @@ async function run() {
     await client.connect();
 
     const usersCollection = client.db("travlerzDB").collection("users");
+    const packagesCollection = client
+      .db("travlerzDB")
+      .collection("tourPackages");
 
     // users Apis
     app.get("/users", async (req, res) => {
@@ -43,6 +46,33 @@ async function run() {
       }
       user.role = "user";
       const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
+
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
+
+    // packages apis
+    app.get("/packages", async (req, res) => {
+      const result = await packagesCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/packages", async (req, res) => {
+      const newPackages = req.body;
+      newPackages.category = "new";
+      const result = await packagesCollection.insertOne(newPackages);
+      res.send(result);
+    });
+
+    app.get("/package/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await packagesCollection.findOne(query);
       res.send(result);
     });
 
