@@ -76,6 +76,40 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/package/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatePackage = req.body;
+      const newPackage = {
+        $set: {
+          title: updatePackage.title,
+          banner: updatePackage.banner,
+          location: updatePackage.location,
+          duration: updatePackage.duration,
+          tourType: updatePackage.tourType,
+          groupSize: updatePackage.groupSize,
+          tourGuide: updatePackage.tourGuide,
+          packagePricePerPerson: updatePackage.packagePricePerPerson,
+          destination: updatePackage.destination,
+          departure: updatePackage.departure,
+          departureTime: updatePackage.departureTime,
+          returnTime: updatePackage.returnTime,
+          packageDetails: updatePackage.packageDetails,
+          included: updatePackage.included,
+          excluded: updatePackage.excluded,
+          tourGallery: updatePackage.tourGallery,
+          category: updatePackage.category,
+        },
+      };
+      const result = await packagesCollection.updateOne(
+        filter,
+        newPackage,
+        options
+      );
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
