@@ -56,6 +56,19 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const { role } = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateRole = {
+        $set: {
+          role: role,
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateRole);
+      res.send(result);
+    });
+
     // packages apis
     // view all packages
     app.get("/packages", async (req, res) => {
