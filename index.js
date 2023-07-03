@@ -57,25 +57,26 @@ async function run() {
     });
 
     // packages apis
+    // view all packages
     app.get("/packages", async (req, res) => {
       const result = await packagesCollection.find().toArray();
       res.send(result);
     });
-
+    // create / add a package
     app.post("/packages", async (req, res) => {
       const newPackages = req.body;
       newPackages.category = "new";
       const result = await packagesCollection.insertOne(newPackages);
       res.send(result);
     });
-
+    // view single package
     app.get("/package/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await packagesCollection.findOne(query);
       res.send(result);
     });
-
+    // update package
     app.put("/package/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -107,6 +108,14 @@ async function run() {
         newPackage,
         options
       );
+      res.send(result);
+    });
+
+    // delete a package
+    app.delete("/package/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await packagesCollection.deleteOne(query);
       res.send(result);
     });
 
