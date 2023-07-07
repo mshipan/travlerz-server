@@ -154,6 +154,21 @@ async function run() {
       const result = await destinationsCollection.insertOne(newdestinations);
       res.send(result);
     });
+    // view single destination
+    app.get("/destination/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await destinationsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // delete a destination
+    app.delete("/destination/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await destinationsCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
