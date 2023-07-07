@@ -25,11 +25,14 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
+    //collections
     const usersCollection = client.db("travlerzDB").collection("users");
     const packagesCollection = client
       .db("travlerzDB")
       .collection("tourPackages");
+    const destinationsCollection = client
+      .db("travlerzDB")
+      .collection("destinations");
 
     // users Apis
     app.get("/users", async (req, res) => {
@@ -136,6 +139,19 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await packagesCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // destination apis
+    // view all destionations
+    app.get("/destionations", async (req, res) => {
+      const result = await destinationsCollection.find().toArray();
+      res.send(result);
+    });
+    // add a destination
+    app.post("/destinations", async (req, res) => {
+      const newdestinations = req.body;
+      const result = await destinationsCollection.insertOne(newdestinations);
       res.send(result);
     });
 
