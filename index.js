@@ -33,6 +33,7 @@ async function run() {
     const destinationsCollection = client
       .db("travlerzDB")
       .collection("destinations");
+    const bookingsCollection = client.db("travlerzDB").collection("bookings");
 
     // users Apis
     app.get("/users", async (req, res) => {
@@ -144,7 +145,7 @@ async function run() {
 
     // destination apis
     // view all destionations
-    app.get("/destionations", async (req, res) => {
+    app.get("/destinations", async (req, res) => {
       const result = await destinationsCollection.find().toArray();
       res.send(result);
     });
@@ -167,6 +168,39 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await destinationsCollection.deleteOne(query);
+      res.send(result);
+    });
+    // view all bookings
+    app.get("/bookings", async (req, res) => {
+      const result = await bookingsCollection.find().toArray();
+      res.send(result);
+    });
+    // add a booking
+    app.post("/bookings", async (req, res) => {
+      const newbookings = req.body;
+      newbookings.status = "pending";
+      const result = await bookingsCollection.insertOne(newbookings);
+      res.send(result);
+    });
+
+    app.patch("/booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const { status } = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateStatus = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await bookingsCollection.updateOne(filter, updateStatus);
+      res.send(result);
+    });
+
+    // delete a booking
+    app.delete("/booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     });
 
