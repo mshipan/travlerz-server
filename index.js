@@ -175,11 +175,26 @@ async function run() {
       const result = await bookingsCollection.find().toArray();
       res.send(result);
     });
+
     // add a booking
     app.post("/bookings", async (req, res) => {
       const newbookings = req.body;
       newbookings.status = "pending";
       const result = await bookingsCollection.insertOne(newbookings);
+      res.send(result);
+    });
+
+    app.get("/booking/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get("/bookings/:uid", async (req, res) => {
+      const uid = req.params.uid;
+      const query = { uid: uid };
+      const result = await bookingsCollection.find(query).toArray();
       res.send(result);
     });
 
