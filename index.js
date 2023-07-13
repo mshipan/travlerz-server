@@ -63,20 +63,23 @@ async function run() {
     });
 
     app.put("/user/:email", async (req, res) => {
-      const email = req.params.email;
-      const filter = { email: email };
-      const options = { upsert: true };
-      const updateUser = req.body;
-      const newUser = {
-        $set: {
-          phone: updateUser.phone,
-          gender: updateUser.gender,
-          dob: updateUser.dob,
-          country: updateUser.country,
-        },
-      };
-      const result = await usersCollection.updateOne(filter, newUser, options);
-      res.send(result);
+      try {
+        const email = req.params.email;
+        const filter = { email: email };
+        const updateUser = req.body;
+        const newUser = {
+          $set: {
+            phone: updateUser.phone,
+            gender: updateUser.gender,
+            dob: updateUser.dob,
+            country: updateUser.country,
+          },
+        };
+        const result = await usersCollection.updateOne(filter, newUser);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ error: error.message });
+      }
     });
 
     app.patch("/user/:id", async (req, res) => {
