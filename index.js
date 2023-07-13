@@ -34,13 +34,15 @@ async function run() {
       .db("travlerzDB")
       .collection("destinations");
     const bookingsCollection = client.db("travlerzDB").collection("bookings");
+    const reviewsCollection = client.db("travlerzDB").collection("reviews");
 
     // users Apis
+    // view all users
     app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
-
+    // create a user to db collection
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = { email: user.email };
@@ -57,6 +59,23 @@ async function run() {
       const email = req.params.email;
       const query = { email: email };
       const result = await usersCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateUser = req.body;
+      const newUser = {
+        $set: {
+          phone: updateUser.phone,
+          gender: updateUser.gender,
+          dob: updateUser.dob,
+          country: updateUser.country,
+        },
+      };
+      const result = await usersCollection.updateOne(filter, newUser, options);
       res.send(result);
     });
 
@@ -216,6 +235,35 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // reviews apis
+    //view all reviews
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
+      res.send(result);
+    });
+    // add a review
+    app.post("/reviews", async (req, res) => {
+      const newReviews = req.body;
+      const result = await reviewsCollection.insertOne(newReviews);
+      res.send(result);
+    });
+
+    // view user specific reviews
+    app.get("/reviews/:uid", async (req, res) => {
+      const uid = req.params.uid;
+      const query = { uid: uid };
+      const result = await reviewsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // delete a review
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewsCollection.deleteOne(query);
       res.send(result);
     });
 
