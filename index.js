@@ -35,6 +35,9 @@ async function run() {
       .collection("destinations");
     const bookingsCollection = client.db("travlerzDB").collection("bookings");
     const reviewsCollection = client.db("travlerzDB").collection("reviews");
+    const tourGuideCollection = client
+      .db("travlerzDB")
+      .collection("tourGuides");
 
     // users Apis
     // view all users
@@ -267,6 +270,57 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await reviewsCollection.deleteOne(query);
+      res.send(result);
+    });
+    // tour guides apis
+    // view all guides
+    app.get("/tour-guides", async (req, res) => {
+      const result = await tourGuideCollection
+        .find()
+        .sort({ _id: -1 })
+        .toArray();
+      res.send(result);
+    });
+
+    // add a guide
+    app.post("/tour-guides", async (req, res) => {
+      const newGuides = req.body;
+      newGuides.designation = "Tour Guide";
+      const result = await tourGuideCollection.insertOne(newGuides);
+      res.send(result);
+    });
+
+    // vew single guide
+    app.get("/guide/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await tourGuideCollection.findOne(query);
+      res.send(result);
+    });
+
+    // update a guide
+    app.patch("/guide/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const guide = req.body;
+      const updateStatus = {
+        $set: {
+          name: guide.name,
+          guideImage: guide.guideImage,
+          facebookURL: guide.facebookURL,
+          instagramURL: guide.instagramURL,
+          twitterURL: guide.twitterURL,
+          whatsappURL: guide.whatsappURL,
+        },
+      };
+      const result = await tourGuideCollection.updateOne(filter, updateStatus);
+      res.send(result);
+    });
+    // delete a guide
+    app.delete("/tour-guides/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await tourGuideCollection.deleteOne(query);
       res.send(result);
     });
 
