@@ -196,6 +196,35 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/destination/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateDestination = req.body;
+      const newDestination = {
+        $set: {
+          title: updateDestination.title,
+          banner: updateDestination.banner,
+          location: updateDestination.location,
+          mapLink: updateDestination.mapLink,
+          destinationDescription: updateDestination.destinationDescription,
+          climateAndWeather: updateDestination.climateAndWeather,
+          localCuisine: updateDestination.localCuisine,
+          transportation: updateDestination.transportation,
+          destinationGallery: updateDestination.destinationGallery,
+          attractions: updateDestination.attractions,
+          travelTips: updateDestination.travelTips,
+          accommodation: updateDestination.accommodation,
+        },
+      };
+      const result = await destinationsCollection.updateOne(
+        filter,
+        newDestination,
+        options
+      );
+      res.send(result);
+    });
+
     // delete a destination
     app.delete("/destination/:id", async (req, res) => {
       const id = req.params.id;
